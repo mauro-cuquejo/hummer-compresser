@@ -167,67 +167,35 @@ def unificar_elementos(lista, lista_salida):
     # for elemento in lista_salida:
     #    print(elemento)
 
+def procesar_elemento(lista_elemento, lista_final, instruccion, max_posicion_mem):
+#le resto un elemento a cada lista porque el ultimo es de identificacion
+    lista_temporal = []
+    if len(lista_elemento) - 1 > int(max_posicion_mem, 16):
+        lista_temporal.append(str(format(int(instruccion, 16) + int(max_posicion_mem, 16), '02x')))
+        lista_temporal.extend(lista_elemento[:int(max_posicion_mem, 16) + 1])
+        lista_final.append(lista_temporal[:])
+        lista_temporal.clear()
+        lista_temporal.append(str(format(int(instruccion, 16) + (len(lista_elemento) - 1) - int(max_posicion_mem, 16), '02x')))
+        lista_temporal.extend(lista_elemento[int(max_posicion_mem, 16):len(lista_elemento) - 1])
+        lista_final.append(lista_temporal[:])
+        lista_temporal.clear()
+    else:
+        lista_temporal.append(str(format(int(instruccion, 16) + (len(lista_elemento) - 1), '02x')))
+        lista_temporal.extend(lista_elemento[:len(lista_elemento) - 1])
+        lista_final.append(lista_temporal[:])
+        lista_temporal.clear()
 
 def comprimir_elementos(lista, lista_final):
     # print(format(126, 'x'))
     #voy a recorrer la lista elemento a elemento
     for elemento in lista:
-        lista_temporal = []
         #me fijo el ultimo elemento. Si es PM, cuento los elementos se los sumo a 00. Si es mayor a 7E el resultado,lo divido en dos instrucciones.
         if elemento[-1] == "PM":
-            #le resto un elemento a cada lista porque el ultimo es de identificacion
-            if len(elemento) - 1 > int("7e", 16):
-                lista_temporal.append(str(format(int("00", 16) + int("7e", 16), 'x')))
-                lista_temporal.extend(elemento[:int("7e", 16) + 1])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-                lista_temporal.append(str(format(int("00", 16) + (len(elemento) - 1) - int("7e", 16), 'x')))
-                lista_temporal.extend(elemento[int("7e", 16):len(elemento) - 1])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-            else:
-                lista_temporal.append(str(format(int("00", 16) + (len(elemento) - 1), '02x')))
-                lista_temporal.extend(elemento[:len(elemento) - 1])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
+            procesar_elemento(elemento, lista_final, "00", "7e")
         if elemento[-1] == "P80":
-            #le resto un elemento a cada lista porque el ultimo es de identificacion
-            if len(elemento) - 1 > int("3f", 16):
-                lista_temporal.append(str(format(int("80", 16) + int("3f", 16), 'x')))
-                # lista_temporal.extend(elemento[:int("3f", 16) + 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-                lista_temporal.append(str(format(int("80", 16) + (len(elemento) - 1) - int("3f", 16), 'x')))
-                # lista_temporal.extend(elemento[int("3f", 16):len(elemento) - 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-            else:
-                lista_temporal.append(str(format(int("80", 16) + (len(elemento) - 1), '02x')))
-                # lista_temporal.extend(elemento[:len(elemento) - 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
+            procesar_elemento(elemento, lista_final, "80", "3f")
         if elemento[-1] == "PC0":
-            #le resto un elemento a cada lista porque el ultimo es de identificacion
-            if len(elemento) - 1 > int("3e", 16):
-                lista_temporal.append(str(format(int("C0", 16) + int("3e", 16), 'x')))
-                # lista_temporal.extend(elemento[:int("3e", 16) + 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-                lista_temporal.append(str(format(int("C0", 16) + (len(elemento) - 1) - int("3e", 16), 'x')))
-                # lista_temporal.extend(elemento[int("3e", 16):len(elemento) - 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
-            else:
-                lista_temporal.append(str(format(int("C0", 16) + (len(elemento) - 1), '02x')))
-                # lista_temporal.extend(elemento[:len(elemento) - 1])
-                lista_temporal.append(elemento[0])
-                lista_final.append(lista_temporal[:])
-                lista_temporal.clear()
+            procesar_elemento(elemento, lista_final, "C0", "3e")
 
 def guardar_salida(lista_final):
     # recibe un archivo y lo abre en modo lectura
