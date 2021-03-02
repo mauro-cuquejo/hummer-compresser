@@ -1,9 +1,3 @@
-# This is a sample Python script.
-
-# Press Mayús+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
 # una entrada comun:
 # .db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 def procesar_linea(linea, lista):
@@ -152,6 +146,9 @@ def unificar_elementos(lista, lista_salida):
             if cont == 0:
                 #me guardo el elemento actual en la lista join
                 lista_joins = elemento_actual
+
+                #probablemente acá tenga que hacer un append de "PM". Revisar
+
             #sino, a la lista que arme, le agrego al final el tipo ingreso manual
             else:
                 lista_joins.append("PM")
@@ -167,21 +164,30 @@ def unificar_elementos(lista, lista_salida):
     # for elemento in lista_salida:
     #    print(elemento)
 
-def procesar_elemento(lista_elemento, lista_final, instruccion, max_posicion_mem):
+def procesar_elemento(tipo, lista_elemento, lista_final, instruccion, max_posicion_mem):
 #le resto un elemento a cada lista porque el ultimo es de identificacion
     lista_temporal = []
     if len(lista_elemento) - 1 > int(max_posicion_mem, 16):
         lista_temporal.append(str(format(int(instruccion, 16) + int(max_posicion_mem, 16), '02x')))
-        lista_temporal.extend(lista_elemento[:int(max_posicion_mem, 16) + 1])
+        if tipo == "PM":
+            lista_temporal.extend(lista_elemento[:int(max_posicion_mem, 16) + 1])
+        else:
+            lista_temporal.append(lista_elemento[0])
         lista_final.append(lista_temporal[:])
         lista_temporal.clear()
         lista_temporal.append(str(format(int(instruccion, 16) + (len(lista_elemento) - 1) - int(max_posicion_mem, 16), '02x')))
-        lista_temporal.extend(lista_elemento[int(max_posicion_mem, 16):len(lista_elemento) - 1])
+        if tipo == "PM":
+            lista_temporal.extend(lista_elemento[int(max_posicion_mem, 16):len(lista_elemento) - 1])
+        else:
+            lista_temporal.append(lista_elemento[0])
         lista_final.append(lista_temporal[:])
         lista_temporal.clear()
     else:
         lista_temporal.append(str(format(int(instruccion, 16) + (len(lista_elemento) - 1), '02x')))
-        lista_temporal.extend(lista_elemento[:len(lista_elemento) - 1])
+        if tipo == "PM":
+            lista_temporal.extend(lista_elemento[:len(lista_elemento) - 1])
+        else:
+            lista_temporal.append(lista_elemento[0])
         lista_final.append(lista_temporal[:])
         lista_temporal.clear()
 
@@ -191,11 +197,11 @@ def comprimir_elementos(lista, lista_final):
     for elemento in lista:
         #me fijo el ultimo elemento. Si es PM, cuento los elementos se los sumo a 00. Si es mayor a 7E el resultado,lo divido en dos instrucciones.
         if elemento[-1] == "PM":
-            procesar_elemento(elemento, lista_final, "00", "7e")
+            procesar_elemento("PM", elemento, lista_final, "00", "7e")
         if elemento[-1] == "P80":
-            procesar_elemento(elemento, lista_final, "80", "3f")
+            procesar_elemento("P80", elemento, lista_final, "80", "3f")
         if elemento[-1] == "PC0":
-            procesar_elemento(elemento, lista_final, "C0", "3e")
+            procesar_elemento("PC0", elemento, lista_final, "C0", "3e")
 
 def guardar_salida(lista_final):
     # recibe un archivo y lo abre en modo lectura
