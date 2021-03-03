@@ -1,3 +1,17 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+
+    
+
+root= tk.Tk(className="hummer-compresser")
+
+#root.geometry("500x500")
+
+canvas1 = tk.Canvas(root, width = 300, height = 300)
+canvas1.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+canvas1.pack()
+
 # una entrada comun:
 # .db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 def procesar_linea(linea, lista):
@@ -204,21 +218,17 @@ def comprimir_elementos(lista, lista_final):
             procesar_elemento("PC0", elemento, lista_final, "C0", "3e")
 
 def guardar_salida(lista_final, archivo):
-    # recibe un archivo y lo abre en modo lectura
-    arch = open("./" + str(archivo.split("\\")[-1]).split(".")[0] +"_output.txt", "w")
+    nombre_archivo_inicial = str(archivo.split("/")[-1]).split(".")[0] +"_output.txt"
+    nombrearch = filedialog.asksaveasfilename(initialfile = nombre_archivo_inicial, initialdir = "/",title = "Guardar como",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
+    if nombrearch != '':
+        arch = open(nombrearch, "w")
+        for elemento in lista_final:
+            arch.write(str(elemento[0]).upper() + ' | ' + ' '.join(elemento[1:]).upper() + '\n')
+        arch.close()
+        messagebox.showinfo("Información", "Los datos fueron guardados en el archivo.")
 
-    for elemento in lista_final:
-        arch.write(str(elemento[0]).upper() + ' | ' + ' '.join(elemento[1:]).upper() + '\n')
-    arch.close()
-
-
-
-
-def armar_salida():
-    # armo la lista con todos los elementos del archivo
-    print("ingrese nombre de archivo y ubicacion:")
-    # archivo = input()
-    archivo = "C:\\Users\\mauro\\Desktop\\proyecto asm\\Codigo original Asm (Input).txt"    
+def armar_salida(archivo):
+    # armo la lista con todos los elementos del archivo    
     if (archivo):
         lista = leer_archivo(archivo)
         lista_salida = []
@@ -231,7 +241,22 @@ def armar_salida():
         comprimir_elementos(lista_final, lista_comprimida)
         guardar_salida(lista_comprimida, archivo)
     else:
-        print("ERROR: el archivo no puede ser nulo.")
+        label1 = tk.Label(root, text= 'ERROR: el archivo no puede ser nulo.', fg='black', font=('helvetica', 12, 'bold'))
+        canvas1.create_window(150, 200, window=label1)        
 
+def seleccionar_archivo(event=None):
+    archivo = filedialog.askopenfilename()
+    armar_salida(archivo)
 
-armar_salida()
+def guardar(self):
+        nombrearch=filedialog.asksaveasfilename(initialdir = "/",title = "Guardar como",filetypes = (("txt files","*.txt"),("todos los archivos","*.*")))
+        if nombrearch!='':
+            archi1=open(nombrearch, "w", encoding="utf-8")
+            archi1.write(self.scrolledtext1.get("1.0", tk.END))
+            archi1.close()
+            messagebox.showinfo("Información", "Los datos fueron guardados en el archivo.")
+
+button1 = tk.Button(text='Seleccionar archivo ASM',command=seleccionar_archivo, bg='black',fg='grey')
+canvas1.create_window(150, 150, window=button1)
+
+root.mainloop()
