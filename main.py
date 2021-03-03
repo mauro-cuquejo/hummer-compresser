@@ -203,9 +203,9 @@ def comprimir_elementos(lista, lista_final):
         if elemento[-1] == "PC0":
             procesar_elemento("PC0", elemento, lista_final, "C0", "3e")
 
-def guardar_salida(lista_final):
+def guardar_salida(lista_final, archivo):
     # recibe un archivo y lo abre en modo lectura
-    arch = open("./salida_comprimida.txt", "w")
+    arch = open("./" + str(archivo.split("\\")[-1]).split(".")[0] +"_output.txt", "w")
 
     for elemento in lista_final:
         arch.write(str(elemento[0]).upper() + ' | ' + ' '.join(elemento[1:]).upper() + '\n')
@@ -217,7 +217,8 @@ def guardar_salida(lista_final):
 def armar_salida():
     # armo la lista con todos los elementos del archivo
     print("ingrese nombre de archivo y ubicacion:")
-    archivo = input()
+    # archivo = input()
+    archivo = "C:\\Users\\mauro\\Desktop\\proyecto asm\\Codigo original Asm (Input).txt"    
     if (archivo):
         lista = leer_archivo(archivo)
         lista_salida = []
@@ -228,7 +229,7 @@ def armar_salida():
         definir_patrones(lista_salida)
         unificar_elementos(lista_salida, lista_final)
         comprimir_elementos(lista_final, lista_comprimida)
-        guardar_salida(lista_comprimida)
+        guardar_salida(lista_comprimida, archivo)
     else:
         print("ERROR: el archivo no puede ser nulo.")
 
